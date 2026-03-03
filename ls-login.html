@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IA Landscaping - Login / Sign Up</title>
+    <link rel="stylesheet" href="landscaping.css">
+</head>
+<body>
+    <header>
+    </header>
+
+    <main>
+        <div class="card">
+            <h1>IA Landscaping</h1>
+
+            <div class="tabs">
+                <button id="show-login" class="active">Login</button>
+                <button id="show-signup">Sign Up</button>
+            </div>
+
+            <form id="login-form" class="form">
+                <label>Email
+                    <input type="email" id="login-email" required>
+                </label>
+                <label>Password
+                    <input type="password" id="login-password" required>
+                </label>
+                <button type="submit">Login</button>
+            </form>
+
+            <form id="signup-form" class="form hidden">
+                <label>Name
+                    <input type="text" id="signup-name" required>
+                </label>
+                <label>Email
+                    <input type="email" id="signup-email" required>
+                </label>
+                <label>Password
+                    <input type="password" id="signup-password" required>
+                </label>
+                <button type="submit">Create Account</button>
+            </form>
+
+            <div id="message" class="message" aria-live="polite"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Professional Landscaping Services. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IA Landscaping - Your Profile</title>
+    <link rel="stylesheet" href="landscaping.css">
+</head>
+<body>
+    <main>
+        <div class="card">
+            <h1>Your Profile</h1>
+            <p id="user-name" style="text-align: center; color: #0f766e; font-weight: bold; margin-bottom: 20px;"></p>
+
+            <form id="profile-form" class="form">
+                <label>Property Size
+                    <input type="text" id="property-size" placeholder="e.g., 1/4 acre, 1/2 acre, 1 acre+">
+                </label>
+
+                <label>Services You're Interested In
+                    <input type="text" id="services" placeholder="e.g., Lawn mowing, landscaping design, mulching">
+                </label>
+
+                <label>Address
+                    <input type="text" id="address" placeholder="Your property address">
+                </label>
+
+                <label>Phone Number
+                    <input type="tel" id="phone" placeholder="(555) 123-4567">
+                </label>
+
+                <button type="submit">Save Profile</button>
+            </form>
+
+            <div id="message" class="message" aria-live="polite"></div>
+
+            <footer>
+                <button id="logout-btn" style="background: #b91c1c; margin-top: 20px; padding: 10px 16px; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%;">Logout</button>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userId = localStorage.getItem('ia_user_id');
+            const userNameEl = document.getElementById('user-name');
+            const profileForm = document.getElementById('profile-form');
+            const messageEl = document.getElementById('message');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            // Redirect if not logged in
+            if (!userId) {
+                window.location.href = 'ls-login.html';
+                return;
+            }
+
+            function showMessage(text, isError = false) {
+                messageEl.textContent = text;
+                messageEl.className = isError ? 'message error' : 'message success';
+            }
+
+            // Load existing profile
+            try {
+                const res = await fetch(`http://localhost:3000/api/profile/${userId}`);
+                const profile = await res.json();
+                if (profile && profile.property_size) {
+                    document.getElementById('property-size').value = profile.property_size || '';
+                    document.getElementById('services').value = profile.services_interested || '';
+                    document.getElementById('address').value = profile.address || '';
+                    document.getElementById('phone').value = profile.phone || '';
+                }
+            } catch (err) {
+                console.error('Error loading profile:', err);
+            }
+
+            // Display user's name
+            const userName = localStorage.getItem('ia_user_name') || 'User';
+            userNameEl.textContent = `Welcome, ${userName}!`;
+
+            // Save profile
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const propertySize = document.getElementById('property-size').value.trim();
+                const services = document.getElementById('services').value.trim();
+                const address = document.getElementById('address').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+
+                try {
+                    const res = await fetch(`http://localhost:3000/api/profile/${userId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            property_size: propertySize,
+                            services_interested: services,
+                            address: address,
+                            phone: phone,
+                        }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Failed to save profile');
+                    showMessage('Profile saved successfully!');
+                } catch (err) {
+                    showMessage(err.message, true);
+                }
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('ia_token');
+                localStorage.removeItem('ia_user_id');
+                localStorage.removeItem('ia_user_name');
+                window.location.href = 'ls-login.html';
+            });
+        });
+    </script>
+</body>
+</html>
